@@ -1,20 +1,17 @@
 #!/bin/bash
 
-url="http://example.com"
+url="https://www.tesla.com/"
 methods=("OPTIONS" "GET" "HEAD" "POST" "DELETE" "TRACE" "PROPFIND" "PROPPATCH" "COPY" "MOVE" "LOCK" "UNLOCK" "PUT")
 
 for method in "${methods[@]}"; do
-    modified_command="curl -I -X $method $url"
-    echo "Executing: $modified_command"
-    
-    response=$(eval $modified_command 2>&1)
-    http_code=$(echo "$response" | grep -i "^HTTP" | awk '{print $2}')
-    
-    if [ "$http_code" == "200" ]; then
-        echo "Response for $method: $http_code OK"
+    response=$(curl -X "$method" -s -o /dev/null -w "%{http_code}" --location "$url")
+
+    if [ "$response" -eq 200 ]; then
+        echo "Response for $method: $response OK"
     else
-        echo "Response for $method: $http_code"
+        echo "Response for $method: $response"
     fi
-    
+
     echo "-------------------------"
 done
+
